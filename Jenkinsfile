@@ -1,31 +1,39 @@
 pipeline {
   agent {
     docker {
-        image 'maven:3-alpine' 
-        args '-v /root/.m2:/root/.m2' 
-        }
-}
-stages {
-stage('Build') { 
-  steps {
-      sh 'mvn -B -DskipTests clean package'
-      archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-        }
-      }
-stage('Test') {
-  steps {
-    sh 'mvn test'
+      image 'maven:3-alpine'
+      args '-v /root/.m2:/root/.m2'
     }
-  post {
-  always {
-    junit 'target/surefire-reports/*.xml'
+
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'mvn -B -DskipTests clean package'
+        archiveArtifacts(artifacts: '**/target/*.jar', fingerprint: true)
+      }
+    }
+    stage('Test') {
+      post {
+        always {
+          junit 'target/surefire-reports/*.xml'
+
+        }
+
+      }
+      steps {
+        sh 'mvn test'
+      }
+    }
+    stage('Deliver') {
+      steps {
+        sh './jenkins/scripts/deliver.sh'
+      }
+    }
+    stage('') {
+      steps {
+        sh 'blabla'
       }
     }
   }
-stage('Deliver') {
-  steps {
-    sh './jenkins/scripts/deliver.sh'
-    }
-  }
-}
 }
