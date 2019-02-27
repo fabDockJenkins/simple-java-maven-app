@@ -30,10 +30,5 @@ pipeline {
         sh './jenkins/scripts/deliver.sh'
       }
     }
-    stage('') {
-      steps {
-        sh 'blabla'
-      }
-    }
   }
 }
